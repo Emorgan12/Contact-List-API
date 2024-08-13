@@ -36,9 +36,12 @@ namespace Contact.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
             var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+
+
 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -75,11 +78,17 @@ namespace Contact.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Contact v1"));
             }
 
-            if (env.IsDevelopment())
-            {
-                app.UseHttpsRedirection();
-            }
+            // if (env.IsDevelopment())
+            // {
+            //     app.UseHttpsRedirection();
+            // }
 
+            app.UseCors(options =>
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyHeader();
+                options.AllowAnyMethod();
+            });
             app.UseRouting();
 
             app.UseAuthorization();

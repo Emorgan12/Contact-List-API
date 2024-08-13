@@ -105,5 +105,22 @@ namespace Contact.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("searchName/{name}")]
+
+        public async Task<IEnumerable<ItemDto>> GetItemsByNameAsync(string name)
+        {
+            var items = (await repository.GetItemsAsync())
+                        .Select(item => item.AsDto());
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                items = items.Where(item => item.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
+
+            logger.LogInformation($"{DateTime.UtcNow.ToString("hh:mm:ss")}: Retrieved {items.Count()} items");
+
+            return items;
+        }
     }
 }
